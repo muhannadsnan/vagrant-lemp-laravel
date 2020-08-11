@@ -6,10 +6,9 @@ echo "----------------- Step 1: Install & configure nginx -----------------"
 yum install -y nginx
 cd /etc/nginx/
 mkdir sites-available sites-enabled
-cp /vagrant/local.dev.conf sites-available/local.dev.conf
-cp sites-available/local.dev.conf conf.d/local.dev.conf
-ln -fs sites-available/local.dev.conf sites-enabled
-cp /vagrant/nginx.conf nginx.conf
+cp /vagrant/dev.local.conf sites-available/dev.local.conf
+cp sites-available/dev.local.conf conf.d/dev.local.conf
+ln -fs sites-available/dev.local.conf sites-enabled
 
 echo "----------------- Step 2: Adjust Firewall Rules -----------------"
 #adjust the firewall settings in order to allow external connections on your Nginx web server, which runs on port 80 by default.
