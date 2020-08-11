@@ -1,27 +1,34 @@
 echo "----------------- Welcome to my Vagrant! -----------------"
-echo "----------------- Step 1: install nginx -----------------"
-yum install -y nginx
-systemctl start nginx
-systemctl enable nginx
-#ln -fs /vagrant /var/www/local.dev
+yum update
+yum install -y nano
 
-echo "----------------- Step 2: configure nginx -----------------"
+echo "----------------- Step 1: Install & configure nginx -----------------"
+yum install -y nginx
 cd /etc/nginx/
 mkdir sites-available sites-enabled
 cp /vagrant/local.dev.conf sites-available/local.dev.conf
 cp sites-available/local.dev.conf conf.d/local.dev.conf
 ln -fs sites-available/local.dev.conf sites-enabled
 cp /vagrant/nginx.conf nginx.conf
-systemctl restart nginx
-nginx -t
 
-echo "----------------- Step 3: Adjust Firewall Rules -----------------"
+echo "----------------- Step 2: Adjust Firewall Rules -----------------"
 #adjust the firewall settings in order to allow external connections on your Nginx web server, which runs on port 80 by default.
 #setenforce permissive
 firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --list-all
 firewall-cmd --reload
 
-yum install nano
+echo "----------------- Step 3: Install & configure php -----------------"
+yum install -y php php-fpm php-mysqlnd
+sudo cp /vagrant/php-fpm--www.conf /etc/php-fpm.d/www.conf
+cp /vagrant/php.ini /etc/php.ini
+
+echo "----------------- Starting & enabling services NGINX & PHP-FPM -----------------";
+systemctl start nginx
+systemctl start php-fpm
+systemctl enable nginx
+systemctl enable php-fpm
 
 echo "----------------- Done! -----------------"
+
+# https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-8
