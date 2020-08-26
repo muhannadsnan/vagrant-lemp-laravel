@@ -1,4 +1,3 @@
-export VAGRANT_PREFER_SYSTEM_BIN=1
 yum install -y dialog
 init(){
     yum update
@@ -83,8 +82,7 @@ progress(){
     percent=$((($current_step*100)/$total_steps))
     sleep 0.3
     ((current_step++))
-    # echo -e "XXX\n${percent}\n$1... \nXXX"
-    echo -e $percent
+    echo -e "XXX\n${percent}\n$1... \nXXX"
 }
 
 main(){
