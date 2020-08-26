@@ -75,61 +75,16 @@ start_services(){
 
 
 
+PROGRESS_BAR_WIDTH=50  # progress bar length in characters
+
 progress_bar() {
-    CODE_SAVE_CURSOR="\033[s"; CODE_RESTORE_CURSOR="\033[u"; CODE_CURSOR_IN_SCROLL_AREA="\033[1A"; COLOR_FG="\e[30m"; COLOR_BG="\e[42m"; COLOR_BG_BLOCKED="\e[43m"; RESTORE_FG="\e[39m"; RESTORE_BG="\e[49m"; PROGRESS_BLOCKED="false"
-    percentage=$1
-    lines=$(tput lines)
-    let lines=$lines
-    echo -en "$CODE_SAVE_CURSOR" # Save cursor
-    echo -en "\033[${lines};0f" # Move cursor position to last row
-    tput el # Clear progress bar
-    PROGRESS_BLOCKED="true" # Draw progress bar
-    print_bar_text $percentage
-    echo -en "$CODE_RESTORE_CURSOR" # Restore cursor position
-}
-print_bar_text() {
-    local percentage=$1
-    local cols=$(tput cols)
-    let bar_size=$cols-17
-    local color="${COLOR_FG}${COLOR_BG}"
-    if [ "$PROGRESS_BLOCKED" = "true" ]; then
-        color="${COLOR_FG}${COLOR_BG_BLOCKED}"
-    fi
-    # Prepare progress bar
-    let complete_size=($bar_size*$percentage)/100
-    let remainder_size=$bar_size-$complete_size
-    progress_bar=$(echo -ne "["; 
-    echo -en "${color}"; 
-    printf_new "#" $complete_size; 
-    echo -en "${RESTORE_FG}${RESTORE_BG}"; 
-    printf_new "." $remainder_size; echo -ne "]");
-    # Print progress bar
-    echo -ne " Progress ${percentage}% ${progress_bar}\n\n"
-}
-printf_new() {
-    str=$1
-    num=$2
-    v=$(printf "%-${num}s" "$str")
-    echo -ne "${v// /$str}"
-}
-destroy_scroll_area() {
-    lines=$(tput lines)
-    echo -en "$CODE_SAVE_CURSOR"
-    echo -en "\033[0;${lines}r"
-    echo -en "$CODE_RESTORE_CURSOR"
-    echo -en "$CODE_CURSOR_IN_SCROLL_AREA"
-    clear_progress_bar
-    if [ "$TRAP_SET" = "true" ]; then
-        trap - INT
-    fi
-}
-clear_progress_bar() {
-    lines=$(tput lines)
-    let lines=$lines
-    echo -en "$CODE_SAVE_CURSOR"
-    echo -en "\033[${lines};0f"
-    tput el
-    echo -en "$CODE_RESTORE_CURSOR"
+    # Rescale the bar according to the progress bar width
+    local __num_bar=$(( $1 * $PROGRESS_BAR_WIDTH / 100 ))
+    # Draw progress bar
+    printf "["
+    for b in $(seq 1 $__num_bar); do printf "#"; done
+    for s in $(seq 1 $(( $PROGRESS_BAR_WIDTH - $__num_bar ))); do printf " "; done
+    printf "] $1%% ($2)\r"
 }
 
 
@@ -141,8 +96,7 @@ progress(){
     percent=$((($current_step*100)/$total_steps))
     sleep 0.2
     ((current_step++))
-    echo -n $1;
-    progress_bar $percent;
+    echo -ne "[" $percent "]" $1;
 }
 
 main(){
