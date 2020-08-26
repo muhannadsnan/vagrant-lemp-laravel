@@ -15,6 +15,10 @@
         .email{font-size: 12pt; margin-bottom: 0;}
         .main a:link{padding:0; background-color: unset;}
         button{border: 5px solid #167da6; padding: 8 30; background-color: #167da6; color: #fff; text-decoration: none; font-size: 20pt; border-radius: 7px; margin-left: 50%; cursor: pointer;}
+        .phpinfo table, .phpinfo h2, .phpinfo h1, .phpinfo hr{display: none;}
+        .phpinfo table:first-child{display: table;}
+        .phpinfo table:first-child h1{display: inline; font-size: 35px; line-height: 64px; -webkit-text-stroke-width: .6px; -webkit-text-stroke-color: #fff;}
+        .phpinfo table:first-child td{text-align: center;}
     </style>
 
     <div class="main">
@@ -24,9 +28,11 @@
         <p class="email"><?=$email?></p>
     </div>
 
-    <?
-        phpinfo();
-    ?>
+    <div class="phpinfo">
+        <?
+            phpinfo();
+        ?>
+    </div>
 </body>
 </html>
 
