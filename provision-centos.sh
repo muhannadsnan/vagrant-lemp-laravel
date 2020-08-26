@@ -1,4 +1,3 @@
-yum install -y dialog
 init(){
     yum update
     yum install -y nano
@@ -74,6 +73,63 @@ start_services(){
     systemctl enable php-fpm
 }
 
+
+
+progress_bar() {
+    CODE_SAVE_CURSOR="\033[s"; CODE_RESTORE_CURSOR="\033[u"; CODE_CURSOR_IN_SCROLL_AREA="\033[1A"; COLOR_FG="\e[30m"; COLOR_BG="\e[42m"; COLOR_BG_BLOCKED="\e[43m"; RESTORE_FG="\e[39m"; RESTORE_BG="\e[49m"; PROGRESS_BLOCKED="false"
+    percentage=$1
+    lines=$(tput lines)
+    let lines=$lines
+    echo -en "$CODE_SAVE_CURSOR" # Save cursor
+    echo -en "\033[${lines};0f" # Move cursor position to last row
+    tput el # Clear progress bar
+    PROGRESS_BLOCKED="true" # Draw progress bar
+    print_bar_text $percentage
+    echo -en "$CODE_RESTORE_CURSOR" # Restore cursor position
+}
+print_bar_text() {
+    local percentage=$1
+    local cols=$(tput cols)
+    let bar_size=$cols-17
+    local color="${COLOR_FG}${COLOR_BG}"
+    if [ "$PROGRESS_BLOCKED" = "true" ]; then
+        color="${COLOR_FG}${COLOR_BG_BLOCKED}"
+    fi
+    # Prepare progress bar
+    let complete_size=($bar_size*$percentage)/100
+    let remainder_size=$bar_size-$complete_size
+    progress_bar=$(echo -ne "["; echo -en "${color}"; printf_new "#" $complete_size; echo -en "${RESTORE_FG}${RESTORE_BG}"; printf_new "." $remainder_size; echo -ne "]");
+    # Print progress bar
+    echo -ne " Progress ${percentage}% ${progress_bar}"
+}
+printf_new() {
+    str=$1
+    num=$2
+    v=$(printf "%-${num}s" "$str")
+    echo -ne "${v// /$str}"
+}
+destroy_scroll_area() {
+    lines=$(tput lines)
+    echo -en "$CODE_SAVE_CURSOR"
+    echo -en "\033[0;${lines}r"
+    echo -en "$CODE_RESTORE_CURSOR"
+    echo -en "$CODE_CURSOR_IN_SCROLL_AREA"
+    clear_progress_bar
+    echo -en "\n\n"
+    if [ "$TRAP_SET" = "true" ]; then
+        trap - INT
+    fi
+}
+clear_progress_bar() {
+    lines=$(tput lines)
+    let lines=$lines
+    echo -en "$CODE_SAVE_CURSOR"
+    echo -en "\033[${lines};0f"
+    tput el
+    echo -en "$CODE_RESTORE_CURSOR"
+}
+
+
 total_steps=7
 current_step=1
 percent=0
@@ -82,10 +138,13 @@ progress(){
     percent=$((($current_step*100)/$total_steps))
     sleep 0.3
     ((current_step++))
-    echo -e "XXX\n${percent}\n$1... \nXXX"
+    # echo -e "XXX\n${percent}\n$1... \nXXX"
+    echo $1;
+    progress_bar $percent;
 }
 
 main(){
+    echo "Welcome to My Vagrant"
     progress "Step ${current_step}:   Update for package manager"
     init &> /dev/null
 
@@ -107,7 +166,7 @@ main(){
 
     progress "Step ${current_step}:   Starting & enabling services"
     start_services &> /dev/null
-} 
 
-main | dialog --title "Welcome to My Vagrant" --gauge "Please wait while installing" 6 80 0;
-dialog --ascii-lines --keep-tite --title "Done" --msgbox "\nVagrant has successfully installed the LEMP stack for you!" 8 80; 
+    echo "Done successfully. The LEMP stack was installed for you!"
+    destroy_scroll_area
+} 
