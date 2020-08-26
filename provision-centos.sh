@@ -1,3 +1,5 @@
+export VAGRANT_PREFER_SYSTEM_BIN=1
+yum install -y dialog
 init(){
     yum update
     yum install -y nano
@@ -73,28 +75,41 @@ start_services(){
     systemctl enable php-fpm
 }
 
-echo "----------------- Welcome to my Vagrant! -----------------"
-init &> /dev/null
+total_steps=7
+current_step=1
+percent=0
+progress(){
+    tot_length=30
+    percent=$((($current_step*100)/$total_steps))
+    sleep 0.3
+    ((current_step++))
+    # echo -e "XXX\n${percent}\n$1... \nXXX"
+    echo -e $percent
+}
 
-echo "----------------- Step 1: Install & configure nginx -----------------"
-install_nginx &> /dev/null
+main(){
+    progress "Step ${current_step}:   Update for package manager"
+    init &> /dev/null
 
-echo "----------------- Step 2: Adjust Firewall Rules -----------------"
-adjust_firewall &> /dev/null
+    progress "Step ${current_step}:   Install & configure nginx"
+    install_nginx &> /dev/null
 
-echo "----------------- Step 3: Install & configure php -----------------"
-install_php &> /dev/null
+    progress "Step ${current_step}:   Adjust Firewall Rules"
+    adjust_firewall &> /dev/null
 
-echo "----------------- Step 4: Install & secure & configure mysql -----------------"
-install_mysql &> /dev/null
-secure_mysql &> /dev/null
+    progress "Step ${current_step}:   Install & configure php"
+    install_php &> /dev/null
 
-echo "----------------- Install & configure phpmyadmin -----------------"
-install_phpmyadmin &> /dev/null
+    progress "Step ${current_step}:   Install & secure & configure mysql"
+    install_mysql &> /dev/null
+    secure_mysql &> /dev/null 
 
-echo "----------------- Starting & enabling services NGINX & PHP-FPM -----------------";
-start_services &> /dev/null
+    progress "Step ${current_step}:   Install & configure phpmyadmin"
+    install_phpmyadmin &> /dev/null
 
-echo "----------------- Done! -----------------"
+    progress "Step ${current_step}:   Starting & enabling services"
+    start_services &> /dev/null
+} 
 
-# https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-8
+main | dialog --title "Welcome to My Vagrant" --gauge "Please wait while installing" 6 80 0;
+dialog --ascii-lines --keep-tite --title "Done" --msgbox "\nVagrant has successfully installed the LEMP stack for you!" 8 80; 
