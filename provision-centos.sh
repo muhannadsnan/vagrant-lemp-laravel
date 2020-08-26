@@ -98,9 +98,13 @@ print_bar_text() {
     # Prepare progress bar
     let complete_size=($bar_size*$percentage)/100
     let remainder_size=$bar_size-$complete_size
-    progress_bar=$(echo -ne "["; echo -en "${color}"; printf_new "#" $complete_size; echo -en "${RESTORE_FG}${RESTORE_BG}"; printf_new "." $remainder_size; echo -ne "]");
+    progress_bar=$(echo -ne "["; 
+    echo -en "${color}"; 
+    printf_new "#" $complete_size; 
+    echo -en "${RESTORE_FG}${RESTORE_BG}"; 
+    printf_new "." $remainder_size; echo -ne "]");
     # Print progress bar
-    echo -ne " Progress ${percentage}% ${progress_bar}"
+    echo -ne " Progress ${percentage}% ${progress_bar}\n\n"
 }
 printf_new() {
     str=$1
@@ -115,7 +119,6 @@ destroy_scroll_area() {
     echo -en "$CODE_RESTORE_CURSOR"
     echo -en "$CODE_CURSOR_IN_SCROLL_AREA"
     clear_progress_bar
-    echo -en "\n\n"
     if [ "$TRAP_SET" = "true" ]; then
         trap - INT
     fi
@@ -136,37 +139,39 @@ percent=0
 progress(){
     tot_length=30
     percent=$((($current_step*100)/$total_steps))
-    sleep 0.3
+    sleep 0.2
     ((current_step++))
-    # echo -e "XXX\n${percent}\n$1... \nXXX"
-    echo $1;
+    echo -n $1;
     progress_bar $percent;
 }
 
 main(){
     echo "Welcome to My Vagrant"
     progress "Step ${current_step}:   Update for package manager"
-    init &> /dev/null
+    # init &> /dev/null
 
     progress "Step ${current_step}:   Install & configure nginx"
-    install_nginx &> /dev/null
+    # install_nginx &> /dev/null
 
     progress "Step ${current_step}:   Adjust Firewall Rules"
     adjust_firewall &> /dev/null
 
     progress "Step ${current_step}:   Install & configure php"
-    install_php &> /dev/null
+    # install_php &> /dev/null
 
     progress "Step ${current_step}:   Install & secure & configure mysql"
-    install_mysql &> /dev/null
-    secure_mysql &> /dev/null 
+    # install_mysql &> /dev/null
 
+    # secure_mysql &> /dev/null 
     progress "Step ${current_step}:   Install & configure phpmyadmin"
-    install_phpmyadmin &> /dev/null
-
+    # install_phpmyadmin &> /dev/null
+    
     progress "Step ${current_step}:   Starting & enabling services"
     start_services &> /dev/null
+
 
     echo "Done successfully. The LEMP stack was installed for you!"
     destroy_scroll_area
 } 
+###
+main
