@@ -73,59 +73,44 @@ start_services(){
     systemctl enable php-fpm
 }
 
-
-
-PROGRESS_BAR_WIDTH=50  # progress bar length in characters
-
-progress_bar() {
-    # Rescale the bar according to the progress bar width
-    local __num_bar=$(( $1 * $PROGRESS_BAR_WIDTH / 100 ))
-    # Draw progress bar
-    printf "["
-    for b in $(seq 1 $__num_bar); do printf "#"; done
-    for s in $(seq 1 $(( $PROGRESS_BAR_WIDTH - $__num_bar ))); do printf " "; done
-    printf "] $1%% ($2)\r"
-}
-
-
 total_steps=7
 current_step=1
 percent=0
 progress(){
     tot_length=30
-    percent=$((($current_step*100)/$total_steps))
+    percent=$(((($current_step-1)*100)/$total_steps))
     sleep 0.2
     ((current_step++))
-    echo -ne "[" $percent "]" $1;
+    echo -ne "[Progress "$percent"%]" $1;
 }
 
 main(){
-    echo "Welcome to My Vagrant"
+    echo "----------    Welcome to My Vagrant   ----------"
+
     progress "Step ${current_step}:   Update for package manager"
-    # init &> /dev/null
+    init &> /dev/null
 
     progress "Step ${current_step}:   Install & configure nginx"
-    # install_nginx &> /dev/null
+    install_nginx &> /dev/null
 
     progress "Step ${current_step}:   Adjust Firewall Rules"
     adjust_firewall &> /dev/null
 
     progress "Step ${current_step}:   Install & configure php"
-    # install_php &> /dev/null
+    install_php &> /dev/null
 
     progress "Step ${current_step}:   Install & secure & configure mysql"
-    # install_mysql &> /dev/null
+    install_mysql &> /dev/null
 
-    # secure_mysql &> /dev/null 
     progress "Step ${current_step}:   Install & configure phpmyadmin"
-    # install_phpmyadmin &> /dev/null
+    secure_mysql &> /dev/null 
+    install_phpmyadmin &> /dev/null
     
     progress "Step ${current_step}:   Starting & enabling services"
     start_services &> /dev/null
 
 
-    echo "Done successfully. The LEMP stack was installed for you!"
-    destroy_scroll_area
+    echo "Done successfully.    The LEMP stack was installed for you!"
 } 
 ###
 main
