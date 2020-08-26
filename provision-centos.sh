@@ -76,41 +76,47 @@ start_services(){
 total_steps=7
 current_step=1
 percent=0
+progress_messages=''
+progress_bar=''
 progress(){
     tot_length=30
     percent=$(((($current_step-1)*100)/$total_steps))
     sleep 0.2
+    clear
+    echo "├───────────────────────────────────────────────────────┤"
+    echo -e "│  ["$percent"%]$1│"
+    progress_messages+="$msg"
     ((current_step++))
-    echo -ne "[Progress "$percent"%]" $1;
 }
 
 main(){
-    echo "----------    Welcome to My Vagrant   ----------"
-
-    progress "Step ${current_step}:   Update for package manager"
+    echo "┌───────────────────────────────────────────────────────┐"
+    echo "│                 Welcome to My Vagrant                 │"
+    progress "    Step ${current_step}:   Update package manager             "
     init &> /dev/null
 
-    progress "Step ${current_step}:   Install & configure nginx"
+    progress "   Step ${current_step}:   Install & configure nginx          "
     install_nginx &> /dev/null
 
-    progress "Step ${current_step}:   Adjust Firewall Rules"
+    progress "   Step ${current_step}:   Adjust Firewall Rules              "
     adjust_firewall &> /dev/null
 
-    progress "Step ${current_step}:   Install & configure php"
+    progress "   Step ${current_step}:   Install & configure php            "
     install_php &> /dev/null
 
-    progress "Step ${current_step}:   Install & secure & configure mysql"
+    progress "   Step ${current_step}:   Install & secure & configure mysql "
     install_mysql &> /dev/null
 
-    progress "Step ${current_step}:   Install & configure phpmyadmin"
+    progress "   Step ${current_step}:   Install & configure phpmyadmin     "
     secure_mysql &> /dev/null 
     install_phpmyadmin &> /dev/null
     
-    progress "Step ${current_step}:   Starting & enabling services"
+    progress "   Step ${current_step}:   Starting & enabling services       "
     start_services &> /dev/null
 
-
-    echo "Done successfully.    The LEMP stack was installed for you!"
+    echo "├───────────────────────────────────────────────────────┤"
+    echo "│ [100%]   Done. LEMP stack is setup.                   │"
+    echo "└───────────────────────────────────────────────────────┘"
 } 
 ###
 main
