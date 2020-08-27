@@ -77,12 +77,9 @@ total_steps=7
 current_step=1
 percent=0
 progress_messages=''
-progress_bar=''
 progress(){
     tot_length=30
     percent=$(((($current_step-1)*100)/$total_steps))
-    sleep 0.2
-    clear
     echo "├───────────────────────────────────────────────────────┤"
     echo -e "│  ["$percent"%]$1│"
     progress_messages+="$msg"
@@ -104,7 +101,7 @@ main(){
     progress "   Step ${current_step}:   Install & configure php            "
     install_php &> /dev/null
 
-    progress "   Step ${current_step}:   Install & secure & configure mysql "
+    progress "   Step ${current_step}:   Install, secure & configure mysql  "
     install_mysql &> /dev/null
 
     progress "   Step ${current_step}:   Install & configure phpmyadmin     "
