@@ -114,39 +114,39 @@ main(){
     echo "┌─────────────────────────────────────────────────────────────┐"
     echo "│               CentOS LEMP Stack with Laravel                │"
     print_progress "    Step ${current_step}:   Update package manager                   "
-    # init &> /dev/null
+    init &> /dev/null
 
     print_progress "   Step ${current_step}:   Install & configure nginx                "
-    # install_nginx &> /dev/null
+    install_nginx &> /dev/null
 
     print_progress "   Step ${current_step}:   Adjust Firewall Rules                    "
-    # adjust_firewall &> /dev/null
+    adjust_firewall &> /dev/null
 
     print_progress "   Step ${current_step}:   Install & configure php                  "
-    # install_php &> /dev/null
+    install_php &> /dev/null
 
     print_progress "   Step ${current_step}:   Install, secure & configure mysql        "
-    # install_mysql &> /dev/null
-    # secure_mysql &> /dev/null 
+    install_mysql &> /dev/null
+    secure_mysql &> /dev/null 
 
     print_progress "   Step ${current_step}:   Install & configure phpmyadmin           "
-    # install_phpmyadmin &> /dev/null
+    install_phpmyadmin &> /dev/null
             
     print_progress "   Step ${current_step}:   Starting & enabling services             "
-    # start_services &> /dev/null
+    start_services &> /dev/null
 
     print_progress "   Step ${current_step}:   Install Composer                         "
-    # install_composer &> /dev/null
+    install_composer &> /dev/null
 
     print_progress "   Step ${current_step}:   Install & configure Laravel              "
-    # install_laravel
+    install_laravel
 
     echo "├─────────────────────────────────────────────────────────────┤"
     echo "│  [100%]  All done.                                          │"
     echo "├─────────────────────────────────────────────────────────────┤"
     echo "│          Laravel development server started...              │"
     echo "└─────────────────────────────────────────────────────────────┘"
-    cd /vagrant/msn-laravel && php artisan serve & # php -S localhost:8000 -t /vagrant/msn-laravel/public/&> /dev/null
+    cd /vagrant/msn-laravel && php artisan serve &   # php -S localhost:8000 -t /vagrant/msn-laravel/public/&> /dev/null
 } 
 ###
 main
