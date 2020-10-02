@@ -1,3 +1,14 @@
+table_header(){
+    echo "┌─────────────────────────────────────────────────────────────────┐"
+    echo "│                  CentOS LEMP Stack with Laravel                 │"
+}
+table_footer(){
+    echo "├─────────────────────────────────────────────────────────────────┤"
+    printf "%1s %6s %-56s %1s" "│" "[100%]" "All done." "│"$'\n'
+    echo "├─────────────────────────────────────────────────────────────────┤"
+    echo "│             Laravel development server started...               │"
+    echo "└─────────────────────────────────────────────────────────────────┘"
+}
 init(){
     yum update
     yum install -y nano
@@ -72,6 +83,12 @@ start_services(){
     systemctl enable nginx
     systemctl enable php-fpm
 }
+install_git(){
+    yum install -y git
+}
+install_nodejs(){
+    yum install -y nodejs
+}
 install_composer(){
     yum install -y php-cli php-json php-zip wget unzip
     curl -sS https://getcomposer.org/installer |php
@@ -86,67 +103,79 @@ install_laravel(){
     cp /vagrant/laravel.local.conf conf.d/laravel.local.conf
     cp /vagrant/laravel.local.conf sites-available/laravel.local.conf
     ln -s /etc/nginx/sites-available/laravel.local.conf /etc/nginx/sites-enabled/laravel.local.conf &> /dev/null #must be pull path
-    echo "│                      ├─ Create Laravel project..            │"
-    php /usr/local/bin/composer create-project laravel/laravel /vagrant/msn-laravel/. &> /dev/null # because "laravel new /vagrant/msn-laravel" does not work
     cd /vagrant/msn-laravel
-    echo "│                      ├─ Install Laravel vendor..            │"
+    print_inside "├─ $(php artisan --version)"
+    print_inside "├─ Create Laravel project.."
+    php /usr/local/bin/composer create-project laravel/laravel . &> /dev/null # because "laravel new /vagrant/msn-laravel" does not work
+    print_inside "├─ Install Laravel vendor.."
     php /usr/local/bin/composer install --ignore-platform-reqs &> /dev/null
-    echo "│                      ├─ Generate project key..              │"
+    print_inside "└─ Generate project key.."
     php artisan key:generate &> /dev/null
     systemctl restart nginx
     systemctl restart php-fpm
 }
+laravel_serve(){
+    cd /vagrant/msn-laravel && php artisan serve &   # php -S localhost:8000 -t /vagrant/msn-laravel/public/&> /dev/null
+}
 
-total_steps=9
+total_steps=12
 tot_length=30
 current_step=1
 percent=0
 progress_messages=''
 print_progress(){
     percent=$(((($current_step-1)*100)/$total_steps))
-    echo "├─────────────────────────────────────────────────────────────┤"
-    echo -e "│  ["$percent"%]$1│"
-    progress_messages+="$msg"
+    echo "├─────────────────────────────────────────────────────────────────┤"
+    printf "%1s %6s %9s %-45s %1s" "│" "["$percent"%]" "Step ${current_step}:" "$1" " │"$'\n'
     ((current_step++))
+}
+print_inside(){
+    printf "%1s %-16s %-50s %1s" "│" " " "$1" "│"$'\n'
 }
 
 main(){
-    echo "┌─────────────────────────────────────────────────────────────┐"
-    echo "│               CentOS LEMP Stack with Laravel                │"
-    print_progress "    Step ${current_step}:   Update package manager                   "
+    table_header
+
+    print_progress "Update package manager"
     init &> /dev/null
 
-    print_progress "   Step ${current_step}:   Install & configure nginx                "
+    print_progress "Install & configure nginx"
     install_nginx &> /dev/null
 
-    print_progress "   Step ${current_step}:   Adjust Firewall Rules                    "
+    print_progress "Adjust Firewall Rules"
     adjust_firewall &> /dev/null
-
-    print_progress "   Step ${current_step}:   Install & configure php                  "
+ #---------------------------------------------------------------
+    print_progress "Install & configure php"
     install_php &> /dev/null
+    print_inside "└─ $(php --version | grep ^PHP | cut -c1-10)"
 
-    print_progress "   Step ${current_step}:   Install, secure & configure mysql        "
+    print_progress "Install, secure & configure mysql"
     install_mysql &> /dev/null
     secure_mysql &> /dev/null 
+    print_inside "└─ $(mysql --version | grep ^mysql | cut -c1-30)"
 
-    print_progress "   Step ${current_step}:   Install & configure phpmyadmin           "
+    print_progress "Install & configure phpmyadmin"
     install_phpmyadmin &> /dev/null
             
-    print_progress "   Step ${current_step}:   Starting & enabling services             "
+    print_progress "Starting & enabling services"
     start_services &> /dev/null
+ #---------------------------------------------------------------
+    print_progress "Install Git" 
+    install_git &> /dev/null
+    print_inside "└─ $(git --version | grep ^git | cut -c1-30)"
 
-    print_progress "   Step ${current_step}:   Install Composer                         "
+    print_progress "Install Nodejs" 
+    install_nodejs &> /dev/null
+    print_inside "└─ Nodejs $(node --version | cut -c1-30)"
+
+    print_progress "Install Composer"
     install_composer &> /dev/null
 
-    print_progress "   Step ${current_step}:   Install & configure Laravel              "
+    print_progress "Install & configure Laravel"
     install_laravel
+    laravel_serve
 
-    echo "├─────────────────────────────────────────────────────────────┤"
-    echo "│  [100%]  All done.                                          │"
-    echo "├─────────────────────────────────────────────────────────────┤"
-    echo "│          Laravel development server started...              │"
-    echo "└─────────────────────────────────────────────────────────────┘"
-    cd /vagrant/msn-laravel && php artisan serve &   # php -S localhost:8000 -t /vagrant/msn-laravel/public/&> /dev/null
+    table_footer
 } 
 ###
 main
