@@ -103,7 +103,7 @@ install_laravel(){
     cp /vagrant/laravel.local.conf conf.d/laravel.local.conf
     cp /vagrant/laravel.local.conf sites-available/laravel.local.conf
     ln -s /etc/nginx/sites-available/laravel.local.conf /etc/nginx/sites-enabled/laravel.local.conf &> /dev/null #must be pull path
-    cd /vagrant/msn-laravel
+    mkdir /vagrant/msn-laravel && cd /vagrant/msn-laravel &> /dev/null
     print_inside "├─ $(php artisan --version)"
     print_inside "├─ Create Laravel project.."
     php /usr/local/bin/composer create-project laravel/laravel . &> /dev/null # because "laravel new /vagrant/msn-laravel" does not work
