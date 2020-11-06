@@ -104,12 +104,13 @@ install_laravel(){
     cp /vagrant/laravel.local.conf conf.d/laravel.local.conf
     cp /vagrant/laravel.local.conf sites-available/laravel.local.conf
     ln -s /etc/nginx/sites-available/laravel.local.conf /etc/nginx/sites-enabled/laravel.local.conf &> /dev/null #must be pull path
+    mkdir /vagrant/msn-laravel &> /dev/null 
     cd /vagrant/msn-laravel
-    print_inside "├─ $(php artisan --version)"
     print_inside "├─ Create Laravel project.."
     php /usr/local/bin/composer create-project laravel/laravel . &> /dev/null # because "laravel new /vagrant/msn-laravel" does not work
     print_inside "├─ Install Laravel vendor.."
     php /usr/local/bin/composer install --ignore-platform-reqs &> /dev/null
+    print_inside "├─ $(php artisan --version)"
     print_inside "└─ Generate project key.."
     php artisan key:generate &> /dev/null
     systemctl restart nginx
