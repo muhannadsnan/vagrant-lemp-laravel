@@ -10,7 +10,7 @@ table_footer(){
     echo "└─────────────────────────────────────────────────────────────────┘"
 }
 init(){
-    yum update
+    yum update -y
     yum install -y nano
 }
 install_nginx(){
@@ -41,26 +41,26 @@ install_mysql(){
 secure_mysql(){
     if [ $(which mysql) = "" ]; then
         MYSQL_ROOT_PASSWORD=12345
-        expect -c "set timeout 10
-        spawn mysql_secure_installation
-        expect \"Enter current password for root*\"
-        send \"$MYSQL\r\"
-        expect \"Set root password?\"
-        send \"y\r\"
-        expect \"New password:\"
-        send \"$MYSQL_ROOT_PASSWORD\r\"
-        expect \"Re-enter new password:\"
-        send \"$MYSQL_ROOT_PASSWORD\r\"
-        expect \"Remove anonymous users?\"
-        send \"y\r\"
-        expect \"Disallow root login remotely?\"
-        send \"y\r\"
-        expect \"Remove test database and access to it?\"
-        send \"y\r\"
-        expect \"Reload privilege tables now?\"
-        send \"y\r\"
-        expect eof"
-        # mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS VAGRANT_DB; SHOW DATABASES;"
+        expect -c "set timeout 1
+            spawn mysql_secure_installation
+            expect \"Enter current password for root*\"
+            send \"$MYSQL\r\"
+            expect \"Set root password?\"
+            send \"y\r\"
+            expect \"New password:\"
+            send \"$MYSQL_ROOT_PASSWORD\r\"
+            expect \"Re-enter new password:\"
+            send \"$MYSQL_ROOT_PASSWORD\r\"
+            expect \"Remove anonymous users?\"
+            send \"y\r\"
+            expect \"Disallow root login remotely?\"
+            send \"y\r\"
+            expect \"Remove test database and access to it?\"
+            send \"y\r\"
+            expect \"Reload privilege tables now?\"
+            send \"y\r\"
+            expect eof"
+            # mysql -u root --password=$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS VAGRANT_DB; SHOW DATABASES;"
     fi
 }
 install_phpmyadmin(){
