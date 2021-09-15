@@ -93,9 +93,12 @@ start_services(){
     systemctl enable php-fpm
 }
 install_git(){
-    yum install -y git
+    yum install -y git-core
 }
 install_nodejs(){
+    # Stable release:
+    yum install -y gcc-c++ make 
+    curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash - 
     yum install -y nodejs
 }
 install_composer(){
