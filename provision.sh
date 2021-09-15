@@ -11,6 +11,8 @@ table_footer(){
 }
 init(){
     yum update -y
+    # IN CASE OF 'GUEST ADDITIONS' PROBLEM, SSH INTO THE VM AND TYPE IN: (with Centos 8 may not help, then try Centos 7)
+    # sudo yum install -y kernel-devel && sudo yum update -y kernel
     yum install -y nano
 }
 install_nginx(){
