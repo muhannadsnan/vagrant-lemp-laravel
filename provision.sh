@@ -13,6 +13,9 @@ init(){
     yum update -y
     # IN CASE OF 'GUEST ADDITIONS' PROBLEM, SSH INTO THE VM AND TYPE IN: (with Centos 8 may not help, then try Centos 7)
     # sudo yum install -y kernel-devel && sudo yum update -y kernel
+    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    yum install -y yum-utils
     yum install -y nano
 }
 install_nginx(){
@@ -24,7 +27,10 @@ adjust_firewall(){
     firewall-cmd --reload
 }
 install_php(){
-    yum install -y php php-fpm php-mysqlnd
+    yum-config-manager --disable 'remi-php*'
+    yum-config-manager --enable remi-php80
+    yum install -y php php-{cli,fpm,mysqlnd,zip,devel,gd,mbstring,curl,xml,pear,bcmath,json}
+    # yum install -y php php-fpm php-mysqlnd
     sudo cp /vagrant/php-fpm--www.conf /etc/php-fpm.d/www.conf
     cp /vagrant/php.ini /etc/php.ini
     cd /etc/nginx/
