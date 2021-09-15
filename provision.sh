@@ -4,7 +4,7 @@ table_header(){
 }
 table_footer(){
     echo "├─────────────────────────────────────────────────────────────────┤"
-    printf "%1s %6s %-56s %1s" "│" "[100%]" "All done." "│"$'\n'
+    printf "%1s %6s %-56s %1s" "│" "[100%]" "  All done." "│"$'\n'
     echo "├─────────────────────────────────────────────────────────────────┤"
     echo "│             Laravel development server started...               │"
     echo "└─────────────────────────────────────────────────────────────────┘"
@@ -93,7 +93,8 @@ start_services(){
     systemctl enable php-fpm
 }
 install_git(){
-    yum install -y git-core
+    yum install -y https://packages.endpoint.com/rhel/7/os/x86_64/endpoint-repo-1.7-1.x86_64.rpm
+    yum install -y git
 }
 install_nodejs(){
     # Stable release:
