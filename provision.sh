@@ -18,7 +18,7 @@ init(){
     yum install -y yum-utils
     yum install -y nano
    	# COLORFUL TERMINAL HOSTNAME & DIRECTORY
-	echo 'export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput sgr0)\](\$(git branch 2>/dev/null | grep '^*' | colrm 1 2))\n\[$(tput sgr0)\]\[$(tput bold)\]\[\033[38;5;36m\]\[\033[48;5;0m\] \\$ \[$(tput sgr0)\]"' >> /home/vagrant/.bashrc
+	echo 'export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;208m\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ "' >> /home/vagrant/.bashrc
 }
 install_nginx(){
     yum install -y nginx
