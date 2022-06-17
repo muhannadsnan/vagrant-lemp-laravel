@@ -19,6 +19,8 @@ init(){
     yum install -y nano
    	# COLORFUL TERMINAL HOSTNAME & DIRECTORY
 	echo 'export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;208m\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ "' >> /home/vagrant/.bashrc
+    # FIX ERROR: Invalid configuration value: failovermethod=priority, BCZ the failover method is no longer supported for EL8 since it has been removed from DNF
+    sudo sed -i '/^failovermethod=/d' /etc/yum.repos.d/*.repo
 }
 install_nginx(){
     yum install -y nginx
