@@ -22,8 +22,7 @@ init(){
     yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
     yum install -y yum-utils
     yum install -y nano
-    # COLORFUL TERMINAL HOSTNAME & DIRECTORY
-    echo export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ " >> /home/vagrant/.bashrc
+    # COLORFUL TERMINAL HOSTNAME & DIRECTORY: in /home/vagrant/.bashrc paste this: export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ "
   
 }
 install_nginx(){
