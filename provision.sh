@@ -10,6 +10,11 @@ table_footer(){
     echo "└─────────────────────────────────────────────────────────────────┘"
 }
 init(){
+    # FIX ERROR: Invalid configuration value: failovermethod=priority, BCZ the failover method is no longer supported for EL8 since it has been removed from DNF
+    sudo sed -i '/^failovermethod=/d' /etc/yum.repos.d/*.repo
+    cd /etc/yum.repos.d/
+    sudo sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+    sudo sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
     yum update -y
     # IN CASE OF 'GUEST ADDITIONS' PROBLEM, SSH INTO THE VM AND TYPE IN: (with Centos 8 may not help, then try Centos 7)
     # sudo yum install -y kernel-devel && sudo yum update -y kernel
@@ -17,10 +22,9 @@ init(){
     yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm
     yum install -y yum-utils
     yum install -y nano
-   	# COLORFUL TERMINAL HOSTNAME & DIRECTORY
-	echo 'export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;208m\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ "' >> /home/vagrant/.bashrc
-    # FIX ERROR: Invalid configuration value: failovermethod=priority, BCZ the failover method is no longer supported for EL8 since it has been removed from DNF
-    sudo sed -i '/^failovermethod=/d' /etc/yum.repos.d/*.repo
+    # COLORFUL TERMINAL HOSTNAME & DIRECTORY
+    echo 'export PS1="\[$(tput bold)\]\[\033[48;5;36m\] \u @ \h \[$(tput sgr0)\]\[\033[48;5;24m\] \W \[$(tput bold)\]\[\033[38;5;0m\]\[\033[48;5;208m\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\] \\$ " >> /home/vagrant/.bashrc
+  
 }
 install_nginx(){
     yum install -y nginx
